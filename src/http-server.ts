@@ -115,6 +115,9 @@ class GHLMCPHttpServer {
    * Setup Express middleware and configuration
    */
   private setupExpress(): void {
+
+    this.app.use(express.static("public"));
+
     // Enable CORS for ChatGPT integration
     this.app.use(cors({
       origin: ['https://chatgpt.com', 'https://chat.openai.com', 'http://localhost:*'],
@@ -126,8 +129,6 @@ class GHLMCPHttpServer {
     // Parse JSON requests
     this.app.use(express.json());
     
-    this.app.use(express.static("public"));
-
     // Request logging
     this.app.use((req, res, next) => {
       console.log(`[HTTP] ${req.method} ${req.path} - ${new Date().toISOString()}`);
