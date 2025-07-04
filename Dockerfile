@@ -24,14 +24,11 @@ RUN npm ci --only=production  # install only production deps
 # Copy built files from builder stage
 COPY --from=builder /app/dist ./dist
 
-# If you have any other files needed at runtime (like a public folder or static files), copy them as well:
-# COPY --from=builder /app/some/other/path ./some/other/path
+# ✅ Fix: Include static files for ChatGPT connector
+COPY --from=builder /app/public ./public
 
-# Expose the port (Railway will map the PORT env var to this)
 EXPOSE 8000
 
-# Set environment to production
 ENV NODE_ENV=production
 
-# Start the Express server
 CMD ["npm", "start"]
