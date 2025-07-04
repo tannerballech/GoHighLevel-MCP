@@ -24,11 +24,9 @@ RUN npm ci --only=production  # install only production deps
 # Copy built files from builder stage
 COPY --from=builder /app/dist ./dist
 
-# ✅ Fix: Include static files for ChatGPT connector
-COPY --from=builder /app/public ./public
-
-COPY --from=builder /app/public/.well-known ./public/.well-known
+# Copy each file explicitly to be safe
 COPY --from=builder /app/public/openapi.yaml ./public/openapi.yaml
+COPY --from=builder /app/public/.well-known/ai-plugin.json ./public/.well-known/ai-plugin.json
 
 
 EXPOSE 8000
