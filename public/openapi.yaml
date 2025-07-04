@@ -1,0 +1,34 @@
+openapi: 3.0.1
+info:
+  title: GoHighLevel MCP API
+  description: API for GoHighLevel Model Control Plane integration
+  version: "1.0.0"
+servers:
+  - url: https://YOUR-APP-NAME.up.railway.app
+paths:
+  /sse:
+    get:
+      summary: Start an SSE connection with ChatGPT
+      responses:
+        "200":
+          description: SSE stream of tool outputs
+          content:
+            text/event-stream:
+              schema:
+                type: string
+    post:
+      summary: Send tool request to the MCP server
+      parameters:
+        - name: sessionId
+          in: query
+          required: false
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: Request accepted
