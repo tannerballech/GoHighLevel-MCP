@@ -1,0 +1,18 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "GoHighLevel MCP",
+  "name_for_model": "gohighlevel_mcp",
+  "description_for_human": "Control GoHighLevel from ChatGPT via tools like contact management and automation.",
+  "description_for_model": "An MCP server for interacting with GoHighLevel. Supports tools for contact creation, messaging, pipeline updates, etc.",
+  "auth": {
+    "type": "none"
+  },
+  "api": {
+    "type": "openapi",
+    "url": "https://web-production-331c3.up.railway.app/openapi.yaml",
+    "has_user_authentication": false
+  },
+  "logo_url": "https://web-production-331c3.up.railway.app/logo.png",
+  "contact_email": "tanner@eaglecreeklands.com.com",
+  "legal_info_url": "https://ealgecreeklands.com/"
+}
