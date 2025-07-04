@@ -116,7 +116,7 @@ class GHLMCPHttpServer {
    */
   private setupExpress(): void {
 
-    this.app.use(express.static(path.join(__dirname, '../public'), {
+    this.app.use(express.static("public", {
       dotfiles: 'allow',
     }));
     
