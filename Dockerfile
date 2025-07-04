@@ -27,6 +27,10 @@ COPY --from=builder /app/dist ./dist
 # ✅ Fix: Include static files for ChatGPT connector
 COPY --from=builder /app/public ./public
 
+COPY --from=builder /app/public/.well-known ./public/.well-known
+COPY --from=builder /app/public/openapi.yaml ./public/openapi.yaml
+
+
 EXPOSE 8000
 
 ENV NODE_ENV=production
