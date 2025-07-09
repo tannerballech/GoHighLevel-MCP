@@ -355,42 +355,71 @@ class GHLMCPHttpServer {
       }
     });
 
-    // SSE endpoint for ChatGPT MCP connection
-    const handleSSE = async (req: express.Request, res: express.Response) => {
-      const sessionId = req.query.sessionId || 'unknown';
+    // Store active transport sessions
+    const activeTransports: Record<string, SSEServerTransport> = {};
+    
+    const handleSSE = async (req: Request, res: Response) => {
+      const sessionId = req.query.sessionId?.toString() || uuidv4();
+    
       console.log(`[GHL MCP HTTP] New SSE connection from: ${req.ip}, sessionId: ${sessionId}, method: ${req.method}`);
-      
+    
       try {
-        // Create SSE transport (this will set the headers)
         const transport = new SSEServerTransport('/sse', res);
-        
-        // Connect MCP server to transport
+    
+        // Save the transport so POST can use it
+        activeTransports[sessionId] = transport;
+    
         await this.server.connect(transport);
-        
+    
         console.log(`[GHL MCP HTTP] SSE connection established for session: ${sessionId}`);
-        
-        // Handle client disconnect
+    
         req.on('close', () => {
           console.log(`[GHL MCP HTTP] SSE connection closed for session: ${sessionId}`);
+          delete activeTransports[sessionId];
         });
-        
       } catch (error) {
         console.error(`[GHL MCP HTTP] SSE connection error for session ${sessionId}:`, error);
-        
-        // Only send error response if headers haven't been sent yet
         if (!res.headersSent) {
           res.status(500).json({ error: 'Failed to establish SSE connection' });
         } else {
-          // If headers were already sent, close the connection
           res.end();
         }
       }
     };
-
-    // Handle both GET and POST for SSE (MCP protocol requirements)
-    this.app.get('/sse', handleSSE);
-    this.app.post('/sse', handleSSE);
-
+    
+    const handlePostMessage = async (req: Request, res: Response) => {
+      const sessionId = req.query.sessionId?.toString();
+    
+      if (!sessionId || !activeTransports[sessionId]) {
+        console.error(`[GHL MCP HTTP] Received POST for unknown or missing sessionId: ${sessionId}`);
+        return res.status(400).json({ error: 'Invalid or missing sessionId' });
+      }
+    
+      const transport = activeTransports[sessionId];
+    
+      let body = '';
+      req.on('data', chunk => {
+        body += chunk;
+      });
+    
+      req.on('end', async () => {
+        try {
+          const json = JSON.parse(body);
+          console.log(`[GHL MCP HTTP] Received POST message for session ${sessionId}:`, json);
+    
+          await transport.handlePostMessage(json);
+    
+          res.status(200).end(); // ✅ Success
+        } catch (err) {
+          console.error(`[GHL MCP HTTP] Error handling POST for session ${sessionId}:`, err);
+          res.status(500).json({ error: 'Failed to process message' });
+        }
+      });
+    };
+    
+    this.app.get('/sse', handleSSE);           // Setup stream
+    this.app.post('/sse', handlePostMessage);  // Handle messages
+    
     // Root endpoint with server info
     this.app.get('/', (req, res) => {
       res.json({
