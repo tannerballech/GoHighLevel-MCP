@@ -19,7 +19,7 @@ WORKDIR /app
 
 # Copy only package.json and package-lock.json to install prod deps
 COPY package*.json ./
-RUN npm ci --only=production  # install only production deps
+RUN npm install --omit=dev
 
 # Copy built files from builder stage
 COPY --from=builder /app/dist ./dist
