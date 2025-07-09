@@ -3,7 +3,9 @@
  * HTTP version for ChatGPT web integration
  */
 
-import express from 'express';
+import express, { Request, Response } from 'express';
+import { v4 as uuidv4 } from 'uuid';
+import path from 'path';
 import cors from 'cors';
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
