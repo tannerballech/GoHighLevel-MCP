@@ -386,6 +386,8 @@ class GHLMCPHttpServer {
         } else {
           res.end();
         }
+
+        return;
       }
     };
     
