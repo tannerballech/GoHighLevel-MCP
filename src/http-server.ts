@@ -360,7 +360,7 @@ class GHLMCPHttpServer {
     // Store active transport sessions
     const activeTransports: Record<string, SSEServerTransport> = {};
     
-    const handleSSE = async (req: Request, res: Response) => {
+    const handleSSE: express.RequestHandler = async (req, res) => {
       const sessionId = req.query.sessionId?.toString() || uuidv4();
     
       console.log(`[GHL MCP HTTP] New SSE connection from: ${req.ip}, sessionId: ${sessionId}, method: ${req.method}`);
@@ -389,7 +389,7 @@ class GHLMCPHttpServer {
       }
     };
     
-    const handlePostMessage = async (req: Request, res: Response) => {
+    const handlePostMessage: express.RequestHandler = async (req, res) => {
       const sessionId = req.query.sessionId?.toString();
     
       if (!sessionId || !activeTransports[sessionId]) {
