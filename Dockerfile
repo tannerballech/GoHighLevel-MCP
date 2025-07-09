@@ -10,7 +10,7 @@ RUN npm ci  # install prod + dev deps
 
 # Copy source code and build
 COPY . . 
-RUN npm run build  # compile TypeScript to dist/
+RUN npm run build --verbose
 
 # Stage 2: Production stage with only prod dependencies
 FROM node:18-alpine
